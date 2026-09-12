@@ -59,7 +59,7 @@ export default async (req: Request) => {
         "X-Title": "Домашка",
       },
       body: JSON.stringify({
-        model: "openrouter/free",
+        model: "google/gemma-4-31b-it:free",
         messages: [
           {
             role: "system",
@@ -78,9 +78,12 @@ export default async (req: Request) => {
       })
     });
 
-    const data = await upstream.json().catch(() => null);
+    const raw = await upstream.text();
+    let data: any = null;
+    try { data = raw ? JSON.parse(raw) : null; } catch {}
+
     if (!upstream.ok) {
-      const message = data?.error?.message || data?.message || "OpenRouter временно не ответил.";
+      const message = data?.error?.message || data?.message || raw || "OpenRouter временно не ответил.";
       if (upstream.status === 429) {
         return json({ error: "Бесплатный лимит ИИ на время закончился. Попробуй чуть позже." }, 429);
       }
@@ -101,7 +104,8 @@ export default async (req: Request) => {
     return json({ answer });
   } catch (error) {
     console.error("solve error", error);
-    return json({ error: "Не получилось разобрать фото. Попробуй ещё раз через несколько секунд." }, 500);
+    const message = error instanceof Error ? error.message : String(error);
+    return json({ error: `Серверная ошибка: ${message}` }, 500);
   }
 };
 
