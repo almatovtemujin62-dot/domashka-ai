@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6C63FF" />
+  <title>Домашка — ИИ-помощник с заданиями</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f7f7fb;
+      --card:#ffffff;
+      --text:#1f2330;
+      --muted:#7a8194;
+      --line:#e8e9f2;
+      --primary:#6c63ff;
+      --primary2:#8d7bff;
+      --soft:#eeecff;
+      --success:#18a66b;
+      --shadow:0 18px 60px rgba(53, 48, 121, .12);
+      --radius:28px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Manrope,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 12% 10%, rgba(108,99,255,.12), transparent 32%),
+        radial-gradient(circle at 88% 5%, rgba(151,130,255,.14), transparent 30%),
+        var(--bg);
+      min-height:100vh;
+    }
+    .container{width:min(1180px,calc(100% - 32px));margin:0 auto}
+    header{
+      padding:22px 0;
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:22px}
+    .logo{
+      width:42px;height:42px;border-radius:14px;
+      display:grid;place-items:center;color:#fff;font-weight:800;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      box-shadow:0 10px 24px rgba(108,99,255,.28);
+    }
+    .nav{display:flex;gap:10px;align-items:center}
+    .ghost{
+      border:1px solid var(--line);background:rgba(255,255,255,.72);backdrop-filter:blur(10px);
+      padding:11px 16px;border-radius:14px;font:inherit;font-weight:700;color:var(--text);cursor:pointer;
+    }
+    .hero{
+      padding:44px 0 22px;
+      display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center;
+    }
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;
+      background:#fff;border:1px solid var(--line);
+      border-radius:999px;padding:8px 12px;color:var(--primary);font-weight:800;font-size:13px;
+      box-shadow:0 8px 30px rgba(53,48,121,.06);
+    }
+    h1{
+      font-size:clamp(42px,7vw,78px);
+      line-height:.98;letter-spacing:-.05em;margin:18px 0 18px;
+      max-width:760px;
+    }
+    .gradient{
+      background:linear-gradient(135deg,var(--primary),#b95cff);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .lead{
+      font-size:clamp(17px,2vw,21px);line-height:1.65;color:var(--muted);max-width:690px;margin:0 0 26px;
+    }
+    .chips{display:flex;flex-wrap:wrap;gap:10px}
+    .chip{padding:10px 13px;background:#fff;border:1px solid var(--line);border-radius:999px;font-size:13px;font-weight:700;color:#5a6072}
+    .assistant-card{
+      background:rgba(255,255,255,.88);backdrop-filter:blur(14px);
+      border:1px solid rgba(255,255,255,.9);border-radius:32px;padding:22px;box-shadow:var(--shadow);
+      transform:rotate(1deg);
+    }
+    .mini-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+    .mini-title{font-weight:800}
+    .online{font-size:12px;color:var(--success);background:#eaf8f2;padding:7px 10px;border-radius:999px;font-weight:800}
+    .fake-photo{
+      height:180px;border-radius:22px;background:
+      linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.65)),
+      repeating-linear-gradient(0deg,#f5f0df 0 24px,#d9d3bf 25px 26px);
+      border:1px solid #ece6d2;position:relative;overflow:hidden;padding:28px 24px;
+    }
+    .scribble{height:8px;border-radius:99px;background:#384056;margin:12px 0;opacity:.85}
+    .scribble:nth-child(1){width:72%}.scribble:nth-child(2){width:51%}.scribble:nth-child(3){width:84%}.scribble:nth-child(4){width:40%}
+    .bubble{
+      margin-top:15px;background:var(--soft);border-radius:18px;padding:14px 15px;color:#4e47a8;font-size:14px;line-height:1.55;font-weight:700;
+    }
+
+    .workspace{
+      margin:42px auto 70px;
+      background:rgba(255,255,255,.76);
+      border:1px solid rgba(255,255,255,.95);
+      border-radius:34px;padding:20px;
+      box-shadow:var(--shadow);backdrop-filter:blur(14px);
+    }
+    .workspace-head{
+      display:flex;justify-content:space-between;gap:16px;align-items:center;padding:6px 8px 18px;
+    }
+    .workspace-head h2{margin:0;font-size:26px;letter-spacing:-.03em}
+    .workspace-head p{margin:4px 0 0;color:var(--muted);font-size:14px}
+    .grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:18px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:26px;padding:18px;min-height:430px}
+    .dropzone{
+      border:2px dashed #d9d6ff;border-radius:22px;background:#faf9ff;
+      min-height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;padding:24px;cursor:pointer;transition:.2s ease;
+    }
+    .dropzone.drag{border-color:var(--primary);background:#f3f0ff;transform:scale(1.01)}
+    .drop-icon{
+      width:70px;height:70px;border-radius:22px;background:linear-gradient(135deg,var(--primary),var(--primary2));
+      display:grid;place-items:center;color:white;font-size:30px;box-shadow:0 12px 28px rgba(108,99,255,.22);
+    }
+    .dropzone h3{margin:16px 0 7px}
+    .dropzone p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+    input[type=file]{display:none}
+    .preview-wrap{display:none;margin-top:14px}
+    .preview-wrap.active{display:block}
+    #preview{width:100%;max-height:250px;object-fit:contain;border-radius:18px;border:1px solid var(--line);background:#f5f5f8}
+    .controls{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    select,.text-input{
+      width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--line);outline:none;font:inherit;background:#fff;color:var(--text);
+    }
+
+    .upload-actions{
+      display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px
+    }
+    .upload-btn{
+      border:1px solid var(--line);background:#fff;color:var(--text);
+      border-radius:14px;padding:13px 14px;font:inherit;font-weight:800;cursor:pointer;
+      text-align:center;
+    }
+    .upload-btn.primary{
+      background:var(--soft);color:#5148bd;border-color:#dcd7ff;
+    }
+
+    .ask{
+      width:100%;margin-top:12px;border:0;border-radius:16px;padding:15px 18px;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      color:#fff;font:inherit;font-weight:800;cursor:pointer;
+      box-shadow:0 12px 28px rgba(108,99,255,.25);transition:.2s ease;
+    }
+    .ask:hover{transform:translateY(-1px)}
+    .ask:disabled{opacity:.55;cursor:not-allowed;transform:none}
+    .answer-panel{display:flex;flex-direction:column}
+    .answer-empty{
+      margin:auto;text-align:center;color:var(--muted);max-width:330px;line-height:1.6;
+    }
+    .answer-empty .spark{font-size:34px;margin-bottom:8px}
+    .answer{display:none}
+    .answer.active{display:block}
+    .answer h3{margin:0 0 14px;font-size:20px}
+    .answer-box{
+      background:#f8f8fc;border:1px solid var(--line);border-radius:18px;padding:16px;line-height:1.65;
+      white-space:pre-wrap;
+    }
+    .answer-note{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.5}
+    .loader{display:none;margin:auto;text-align:center;color:var(--muted)}
+    .loader.active{display:block}
+    .dots{display:inline-flex;gap:6px;margin-bottom:12px}
+    .dots i{width:9px;height:9px;border-radius:50%;background:var(--primary);animation:b 1s infinite ease-in-out}
+    .dots i:nth-child(2){animation-delay:.12s}.dots i:nth-child(3){animation-delay:.24s}
+    @keyframes b{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+    footer{padding:12px 0 38px;text-align:center;color:var(--muted);font-size:13px}
+    @media(max-width:850px){
+      .hero,.grid{grid-template-columns:1fr}
+      .assistant-card{transform:none}
+      .hero{padding-top:24px}
+      .workspace{margin-top:24px}
+    }
+    @media(max-width:560px){
+      .container{width:min(100% - 20px,1180px)}
+      header{padding-top:14px}
+      .nav .ghost:first-child{display:none}
+      .hero{gap:22px}
+      h1{font-size:50px}
+      .controls{grid-template-columns:1fr}
+      .workspace{padding:10px;border-radius:26px}
+      .panel{padding:13px;border-radius:20px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand"><div class="logo">Д</div> Домашка</div>
+      <div class="nav">
+        <button class="ghost" onclick="document.querySelector('.workspace').scrollIntoView()">Как это работает</button>
+        <button class="ghost">Войти</button>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div>
+        <div class="eyebrow">✨ ИИ-помощник для учёбы</div>
+        <h1>Сфоткай задание.<br><span class="gradient">Домашка разберёт.</span></h1>
+        <p class="lead">Загрузи фото примера, задачи или упражнения — получи понятное решение по шагам, а не просто голый ответ.</p>
+        <div class="chips">
+          <div class="chip">📐 Математика</div>
+          <div class="chip">🧪 Химия</div>
+          <div class="chip">⚡ Физика</div>
+          <div class="chip">🌍 История</div>
+          <div class="chip">📝 Языки</div>
+        </div>
+      </div>
+
+      <div class="assistant-card">
+        <div class="mini-top">
+          <div class="mini-title">Пример разбора</div>
+          <div class="online">● ИИ онлайн</div>
+        </div>
+        <div class="fake-photo">
+          <div class="scribble"></div><div class="scribble"></div><div class="scribble"></div><div class="scribble"></div>
+        </div>
+        <div class="bubble">Не просто: «ответ 12».<br>Объясняю, откуда он взялся и как решить похожую задачу самому.</div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <div class="workspace-head">
+        <div>
+          <h2>Решить домашку</h2>
+          <p>Загрузи фотографию задания и выбери предмет.</p>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="panel">
+          <div class="dropzone" id="dropzone">
+            <div class="drop-icon">＋</div>
+            <h3>Добавь фото задания</h3>
+            <p>На телефоне удобнее выбрать фото из галереи<br>или сразу открыть камеру.</p>
+          </div>
+
+          <input id="fileInput" type="file" accept="image/*">
+          <input id="cameraInput" type="file" accept="image/*" capture="environment">
+
+          <div class="upload-actions">
+            <label class="upload-btn primary" for="fileInput">🖼️ Выбрать из галереи</label>
+            <label class="upload-btn" for="cameraInput">📷 Сфотографировать</label>
+          </div>
+
+          <div class="preview-wrap" id="previewWrap">
+            <img id="preview" alt="Превью задания">
+          </div>
+
+          <div class="controls">
+            <select id="subject">
+              <option>Математика</option>
+              <option>Физика</option>
+              <option>Химия</option>
+              <option>Русский язык</option>
+              <option>Казахский язык</option>
+              <option>Английский язык</option>
+              <option>История</option>
+              <option>Другое</option>
+            </select>
+            <select id="mode">
+              <option value="steps">Решение по шагам</option>
+              <option value="short">Краткий ответ</option>
+              <option value="explain">Объяснить тему</option>
+            </select>
+          </div>
+
+          <input class="text-input" id="comment" style="margin-top:10px" placeholder="Можно уточнить: «реши №4» или «объясни проще»">
+          <button class="ask" id="askBtn" disabled>✨ Решить с ИИ</button>
+        </div>
+
+        <div class="panel answer-panel">
+          <div class="answer-empty" id="emptyState">
+            <div class="spark">✦</div>
+            Здесь появится разбор задания. Сначала загрузи фотографию слева.
+          </div>
+
+          <div class="loader" id="loader">
+            <div class="dots"><i></i><i></i><i></i></div><br>
+            Разбираю задание…
+          </div>
+
+          <div class="answer" id="answer">
+            <h3>Ответ</h3>
+            <div class="answer-box" id="answerText"></div>
+            <div class="answer-note">ИИ может ошибаться. Для важных заданий перепроверь формулы, числа и факты перед сдачей.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>Домашка • Учись быстрее, но понимай, что решаешь 💜</footer>
+  </div>
+
+  <script>
+    const input = document.getElementById('fileInput');
+    const cameraInput = document.getElementById('cameraInput');
+    const drop = document.getElementById('dropzone');
+    const preview = document.getElementById('preview');
+    const wrap = document.getElementById('previewWrap');
+    const btn = document.getElementById('askBtn');
+    const empty = document.getElementById('emptyState');
+    const loader = document.getElementById('loader');
+    const answer = document.getElementById('answer');
+    const answerText = document.getElementById('answerText');
+    let currentFile = null;
+
+    function showFile(file){
+      if(!file || !file.type.startsWith('image/')) return;
+      currentFile = file;
+      const reader = new FileReader();
+      reader.onload = e => {
+        preview.src = e.target.result;
+        wrap.classList.add('active');
+        btn.disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    input.addEventListener('change', e => showFile(e.target.files[0]));
+    cameraInput.addEventListener('change', e => showFile(e.target.files[0]));
+    drop.addEventListener('click', () => input.click());
+
+    ['dragenter','dragover'].forEach(evt => drop.addEventListener(evt, e => {
+      e.preventDefault(); drop.classList.add('drag');
+    }));
+    ['dragleave','drop'].forEach(evt => drop.addEventListener(evt, e => {
+      e.preventDefault(); drop.classList.remove('drag');
+    }));
+    drop.addEventListener('drop', e => {
+      const file = e.dataTransfer.files[0];
+      if(file) showFile(file);
+    });
+
+    async function resizeImage(file, maxSide = 1400, quality = 0.76){
+      const bitmap = await createImageBitmap(file);
+      let { width, height } = bitmap;
+      const scale = Math.min(1, maxSide / Math.max(width, height));
+      width = Math.round(width * scale);
+      height = Math.round(height * scale);
+
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0, width, height);
+      bitmap.close();
+      return canvas.toDataURL('image/jpeg', quality);
+    }
+
+    btn.addEventListener('click', async () => {
+      const file = currentFile;
+      if(!file) return;
+
+      empty.style.display='none';
+      answer.classList.remove('active');
+      loader.classList.add('active');
+      btn.disabled = true;
+
+      const subject = document.getElementById('subject').value;
+      const mode = document.getElementById('mode').value;
+      const comment = document.getElementById('comment').value.trim();
+
+      try {
+        const image = await resizeImage(file);
+        const response = await fetch('/api/solve', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image, subject, mode, comment })
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if(!response.ok){
+          throw new Error(data.error || 'Не получилось получить ответ от ИИ.');
+        }
+
+        answerText.textContent = data.answer;
+      } catch (error) {
+        answerText.textContent = 'Упс 😭 ' + (error?.message || 'Произошла ошибка. Попробуй ещё раз.');
+      } finally {
+        loader.classList.remove('active');
+        answer.classList.add('active');
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
